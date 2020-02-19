@@ -24,6 +24,10 @@ Butler moves the cards between the lists around midnight, but that's not importa
 5. Run `make sendmail` to have sendmail send that _to the recipients specified
    in `email_template.html`_.
 
+## What if I want to re-make the files I just made?
+
+Run `make --always-make` or `make -B` (they're the same thing).
+
 ## To-do:
 
 - [ ] Make the conda environment's location detection automatic

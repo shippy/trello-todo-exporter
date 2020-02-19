@@ -14,6 +14,4 @@ $(md_file):
 sendmail: $(html_file)
 	cat $(html_file) | sendmail -t
 
-# But that's an actual target, Simon, not a phony!
-# I know, but I always want to remake it, so ¯\_(ツ)_/¯
-.PHONY: sendmail $(md_file)
+.PHONY: sendmail
