@@ -1,15 +1,22 @@
 CONDA_ENV = /fs/u00/simon/.conda/envs/trello_exporter/
-mail_file := output/$(shell date +'%Y%m%d').html
-$(mail_file):
-	./trello_retriever.py | $(CONDA_ENV)/bin/pandoc -f gfm --template email_template.html -M title="Update, `date +'%Y/%m/%d'`" -o $(mail_file)
+title := $(shell date +'%Y%m%d')
+html_file := output/$(title).html
+md_file := output/$(title).md
 
-clean:
-	rm $(mail_file)
+$(html_file): $(md_file)
+	$(CONDA_ENV)/bin/pandoc -f gfm --template email_template.html -M title="Update, `date +'%Y/%m/%d'`" -o $(html_file) $(md_file)
+
+$(md_file):
+	./trello_retriever.py > $(md_file)
+
+clean: 
+	rm $(md_file) $(html_file)
 
 # inspired by https://stackoverflow.com/a/3267187/2114580
-redo: | clean $(mail_file)
+# ...unnecessary, given the existence of make --always-make
+redo: | clean $(md_file) $(html_file)
 
-sendmail: $(mail_file)
-	cat $(mail_file) | sendmail -t
+sendmail: $(html_file)
+	cat $(html_file) | sendmail -t
 
 .PHONY: sendmail redo clean
