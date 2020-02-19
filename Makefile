@@ -4,7 +4,9 @@ html_file := output/$(title).html
 md_file := output/$(title).md
 
 $(html_file): $(md_file)
-	$(CONDA_ENV)/bin/pandoc -f gfm --template email_template.html -M title="Update, `date +'%Y/%m/%d'`" -o $(html_file) $(md_file)
+	$(CONDA_ENV)/bin/pandoc -f gfm --template email_template.html \
+		-M title="Update, `date +'%Y/%m/%d'`" \
+		-o $(html_file) $(md_file)
 
 $(md_file):
 	$(CONDA_ENV)/bin/python trello_retriever.py > $(md_file)
