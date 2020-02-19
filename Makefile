@@ -3,7 +3,13 @@ mail_file := output/$(shell date +'%Y%m%d').html
 $(mail_file):
 	./trello_retriever.py | $(CONDA_ENV)/bin/pandoc -f gfm --template email_template.html -M title="Update, `date +'%Y/%m/%d'`" -o $(mail_file)
 
+clean:
+	rm $(mail_file)
+
+# inspired by https://stackoverflow.com/a/3267187/2114580
+redo: | clean $(mail_file)
+
 sendmail: $(mail_file)
 	cat $(mail_file) | sendmail -t
 
-.PHONY: email
+.PHONY: sendmail redo clean
