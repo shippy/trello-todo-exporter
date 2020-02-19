@@ -1,0 +1,10 @@
+name: trello_exporter
+channels:
+  - conda-forge
+dependencies:
+  - python=2.7
+  - pandoc>=2.6
+  - pip
+  - pip:
+    - py-trello
+    - python-dotenv
