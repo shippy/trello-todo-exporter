@@ -9,14 +9,9 @@ $(html_file): $(md_file)
 $(md_file):
 	./trello_retriever.py > $(md_file)
 
-clean: 
-	rm $(md_file) $(html_file)
-
-# inspired by https://stackoverflow.com/a/3267187/2114580
-# ...unnecessary, given the existence of make --always-make
-redo: | clean $(md_file) $(html_file)
-
 sendmail: $(html_file)
 	cat $(html_file) | sendmail -t
 
-.PHONY: sendmail redo clean
+# But that's an actual target, Simon, not a phony!
+# I know, but I always want to remake it, so ¯\_(ツ)_/¯
+.PHONY: sendmail $(md_file)
