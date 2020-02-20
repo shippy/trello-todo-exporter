@@ -8,29 +8,30 @@ import datetime
 from dotenv import load_dotenv
 import os
 from trello import TrelloClient
+from functools import partial
 
 DATE = datetime.datetime.today().strftime("%Y/%m/%d")
 INITIAL_HR = False
 
 
-def get_trello_list_from_name(name, board, keys_dict=None):
+def get_trello_list_from_name(api, board, name, list_id_lookup=None):
     """
     Load lists based on IDs if available, name-matching thru all board lists if
     not
 
-    name: List name, should correspond to keys in keys_dict as well as actual
+    name: List name, should correspond to keys in list_id_lookup as well as actual
               Trello list name
     board: trello.Board object
-    keys_dict: "List name" => trello.List object ID
+    list_id_lookup: "List name" => trello.List object ID
     """
     # Try to get dict_id if that's a possibility
     dict_id = None
-    if keys_dict is not None:
-        dict_id = keys_dict.get(name)
+    if list_id_lookup is not None:
+        dict_id = list_id_lookup.get(name)
 
     if dict_id is not None:
         # If dict_id successfully retrieved, use it
-        target = client.get_list(dict_id)
+        target = api.get_list(dict_id)
     else:
         # Iterate through all lists on board until you find the first one
         # that's open and has this name
@@ -125,17 +126,17 @@ def get_labels_from_card(card):
     return "".join(labels_text)
 
 
-def main_print(client, board, list_ids):
-    my_week = board
+def main_print(api, board, list_id_lookup):
+    get_trello_list = partial(
+        get_trello_list_from_name,
+        api=api,
+        board=board,
+        list_id_lookup=list_id_lookup)
 
-    # print("---")
-    # print("title: Update, {}".format(DATE))
-    # print("---")
-
-    done_today = get_trello_list_from_name('Done today', my_week, list_ids)
-    tomorrow = get_trello_list_from_name('Tomorrow', my_week, list_ids)
-    waiting_on = get_trello_list_from_name('Waiting on', my_week, list_ids)
-    in_progress = get_trello_list_from_name('In progress', my_week, list_ids)
+    done_today = get_trello_list(name='Done today')
+    tomorrow = get_trello_list(name='Tomorrow')
+    waiting_on = get_trello_list(name='Waiting on')
+    in_progress = get_trello_list(name='In progress')
 
     print_cards_from_list(done_today, 'x')
     print_cards_from_list(in_progress, '-')
@@ -149,12 +150,12 @@ if __name__ == '__main__':
         api_key=os.getenv('TRELLO_API_KEY'),
         token=os.getenv('TRELLO_TOKEN'),
         token_secret=os.getenv('TRELLO_TOKEN_SECRET'))
+    my_week = client.get_board(os.getenv('BOARD_ID'))
     list_ids = {
         'Waiting on': os.getenv('LIST_WAITING_ON_ID'),
         'Done today': os.getenv('LIST_DONE_TODAY_ID'),
         'Tomorrow': os.getenv('LIST_TOMORROW_ID'),
         'In progress': os.getenv('LIST_INPROGRESS_ID'),
     }
-    my_week = client.get_board(os.getenv('BOARD_ID'))
     print('# {}'.format(DATE))
     main_print(client, my_week, list_ids)
