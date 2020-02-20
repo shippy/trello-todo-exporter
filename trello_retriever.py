@@ -116,8 +116,9 @@ def print_attachments_from_card(card):
 def get_labels_from_card(card):
     labels = card.labels
     labels_text = []
+    # spaces around label intended as padding that e-mail client doesn't strip
     label_template = ("<span style='color: white; background-color: {color};'>"
-                      " {lbl} </span> ")  # spaces around intended as padding
+                      "&nbsp;{lbl}&nbsp;</span> ")
     for label in labels:
         labels_text.append(label_template.format(
             color=label.color, lbl=label.name))
