@@ -1,4 +1,9 @@
 #!/fs/u00/simon/.conda/envs/trello_exporter/bin/python
+"""
+Print out the cards from your Daily to-do board as nested checklists.
+
+See README for details.
+"""
 import datetime
 from dotenv import load_dotenv
 import os
@@ -6,6 +11,7 @@ from trello import TrelloClient
 
 DATE = datetime.datetime.today().strftime("%Y/%m/%d")
 INITIAL_HR = False
+
 
 def get_trello_list_from_name(name, board, keys_dict=None):
     """
@@ -48,9 +54,9 @@ def print_cards_from_list(lst, checkmark=' ', link_after_name=True,
         return
 
     if link_after_name:
-        card_format = '- [{}] **{}** ([card]({})). {}'
+        card_format = '- [{check}] {labels}**{name}** ([card]({url})). {desc}'
     else:
-        card_format = "- [{}] **[{}]({})**. {}"
+        card_format = "- [{check}] {labels}**[{name}]({url})**. {desc}"
 
     global INITIAL_HR
     if INITIAL_HR:
@@ -64,7 +70,13 @@ def print_cards_from_list(lst, checkmark=' ', link_after_name=True,
             desc = "Long description - see card."
         else:
             desc = card.desc
-        print(card_format.format(checkmark, card.name, card.url, desc))
+        labels = get_labels_from_card(card)
+        print(card_format.format(
+            check=checkmark,
+            labels=labels,
+            name=card.name,
+            url=card.url,
+            desc=desc))
         print_checklists_from_card(card)
         if print_attachments:
             print_attachments_from_card(card)
@@ -87,16 +99,29 @@ def print_checklists_from_card(card):
                 checkmark = '- [x]'
             else:
                 checkmark = '- [ ]'
-            print('{}    {} {}'.format(addl_indent, checkmark, item.get('name')))
+            print('{}    {} {}'.format(
+                addl_indent, checkmark, item.get('name')))
 
 
 def print_attachments_from_card(card):
     attachments = card.attachments
     for a in attachments:
         if not a['isUpload'] and (a['url'] == a['name']):
-            print('    - [See more at origin card]({})'.format(a['url']))
+            print('    - [Card originally from another board]({})'
+                  .format(a['url']))
         elif not a['isUpload']:
             print('    - Attachment: {}'.format(a['name']))
+
+
+def get_labels_from_card(card):
+    labels = card.labels
+    labels_text = []
+    label_template = ("<span style='color: white; background-color: {color};'>"
+                      " {lbl} </span> ")  # spaces around intended as padding
+    for label in labels:
+        labels_text.append(label_template.format(
+            color=label.color, lbl=label.name))
+    return "".join(labels_text)
 
 
 def main_print(client, board, list_ids):
@@ -130,4 +155,5 @@ if __name__ == '__main__':
         'In progress': os.getenv('LIST_INPROGRESS_ID'),
     }
     my_week = client.get_board(os.getenv('BOARD_ID'))
+    print('# {}'.format(DATE))
     main_print(client, my_week, list_ids)
