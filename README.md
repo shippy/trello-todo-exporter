@@ -46,7 +46,7 @@ Courtesy of [/u/heyylisten/](https://www.reddit.com/r/trello/comments/4axfcd/whe
 `conda info` when you sourced the environment, or `conda info --env` for
 information about all your environments.
 
-### Make says "make: <file> is up to date." What if I want to re-make the files I just made?
+### Make says `make: [file] is up to date.` What if I want to re-make the files I just made?
 
 Run `make --always-make` or `make -B` (they're the same thing).
 
