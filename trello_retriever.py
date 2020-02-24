@@ -49,15 +49,12 @@ def get_trello_list_from_name(api, board, name, list_id_lookup=None):
 
 
 def print_cards_from_list(lst, checkmark=' ', link_after_name=True,
-                          print_attachments=True):
+                          print_attachments=False):
     cards = lst.list_cards()
     if len(cards) == 0:
         return
 
-    if link_after_name:
-        card_format = '- [{check}] {labels}**{name}** ([card]({url})). {desc}'
-    else:
-        card_format = "- [{check}] {labels}**[{name}]({url})**. {desc}"
+    card_format = '- [{check}] {labels} {name_with_url}. {desc}'
 
     global INITIAL_HR
     if INITIAL_HR:
@@ -72,15 +69,17 @@ def print_cards_from_list(lst, checkmark=' ', link_after_name=True,
         else:
             desc = card.desc
         labels = get_labels_from_card(card)
+        name_with_url = get_formatted_link(card, link_after_name, check_alternatives=True)
         print(card_format.format(
             check=checkmark,
             labels=labels,
-            name=card.name,
-            url=card.url,
+            # name=card.name,
+            # url=card.url,
+            name_with_url=name_with_url,
             desc=desc))
         print_checklists_from_card(card)
         if print_attachments:
-            print_attachments_from_card(card)
+            print_attachments_from_card(card, skip_links=True)
 
 
 def print_checklists_from_card(card):
@@ -104,18 +103,51 @@ def print_checklists_from_card(card):
                 addl_indent, checkmark, item.get('name')))
 
 
-def print_attachments_from_card(card):
+def print_attachments_from_card(card, skip_links=False):
     attachments = card.attachments
     for a in attachments:
         if not a['isUpload'] and (a['url'] == a['name']):
-            print('    - [Card originally from another board]({})'
-                  .format(a['url']))
+            if not skip_links:
+                print('    - [Card originally from another board]({})'
+                      .format(a['url']))
         elif not a['isUpload']:
             print('    - Attachment: {}'.format(a['name']))
 
 
+def get_formatted_link(card, link_after_name=True, check_alternatives=True):
+    def get_alternative_card_source(card):
+        attachments = card.attachments
+        for a in attachments:
+            if not a['isUpload'] and (a['url'] == a['name']):
+                return a['url']
+        else:
+            return None
+
+    alt = None
+    if check_alternatives:
+        alt = get_alternative_card_source(card)
+
+    if link_after_name:
+        if alt is None:
+            template = "**{name}** ([card]({url}))"
+        else:
+            template = "**{name}** ([card]({url}), [card on original board]({alt}))"
+    else:
+        template = "**[{name}]({url})**"
+        if alt is not None:
+            template += " ([card on original board]({alt}))"
+
+    if alt is None:
+        return template.format(name=card.name, url=card.url)
+    else:
+        return template.format(name=card.name, url=card.url, alt=alt)
+
+
 def get_labels_from_card(card):
     labels = card.labels
+    if labels is None:
+        return ""
+
     labels_text = []
     # spaces around label intended as padding that e-mail client doesn't strip
     label_template = ("<span style='color: white; background-color: {color};'>"
