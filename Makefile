@@ -17,4 +17,7 @@ $(md_file):
 sendmail: $(html_file)
 	cat $(html_file) | sendmail -t
 
-.PHONY: sendmail
+show: $(md_file)
+	cat $^
+
+.PHONY: sendmail show
