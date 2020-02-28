@@ -9,6 +9,7 @@ $(html_file): $(md_file)
 		-M title="Update, `date +'%Y/%m/%d'`" \
 		-M mail_to="$(TRELLO_MAIL_TO)" \
 		-M mail_from="$(TRELLO_MAIL_FROM)" \
+		-M mail_cc="$(TRELLO_MAIL_CC)" \
 		-o $(html_file) $(md_file)
 
 $(md_file):
