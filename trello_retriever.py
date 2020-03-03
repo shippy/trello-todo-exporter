@@ -84,12 +84,12 @@ def print_cards_from_list(lst, checkmark=' ', link_after_name=True,
 
 def print_checklists_from_card(card):
     checklists = card.checklists
-    print_names = len(checklists) > 2
+    print_names = len(checklists) >= 2
+
     for chl in checklists:
         if print_names:
-            # print('## {}'.format(chl.name))
-            print('  - **{}**'.format(chl.name))
-            addl_indent = '  '
+            print('    - **{}**'.format(chl.name))
+            addl_indent = '    '
         else:
             addl_indent = ''
 
