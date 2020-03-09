@@ -8,3 +8,5 @@ dependencies:
   - pip:
     - py-trello
     - python-dotenv
+      # soft dependency
+    - Pygments>=2.2

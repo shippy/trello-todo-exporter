@@ -19,6 +19,6 @@ sendmail: $(html_file)
 	cat $(html_file) | sendmail -t
 
 show: $(md_file)
-	cat $^
+	cat $^ | (((command -v pygmentize >/dev/null 2>&1) && pygmentize -l html | pygmentize -l md -f terminal) || cat)
 
 .PHONY: sendmail show
