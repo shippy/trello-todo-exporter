@@ -97,6 +97,8 @@ def print_checklists_from_card(card):
         for item in items:
             if item.get('checked'):
                 checkmark = '- [x]'
+            elif "in progress" in item.get('name'):
+                checkmark = '- [-]'
             else:
                 checkmark = '- [ ]'
             print('{}    {} {}'.format(
