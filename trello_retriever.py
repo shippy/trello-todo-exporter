@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import os
 from trello import TrelloClient
 from functools import partial
+import re
 
 DATE = datetime.datetime.today().strftime("%Y/%m/%d")
 INITIAL_HR = False
@@ -82,7 +83,7 @@ def print_cards_from_list(lst, checkmark=' ', link_after_name=True,
             print_attachments_from_card(card, skip_links=True)
 
 
-def print_checklists_from_card(card):
+def print_checklists_from_card(card, remove_wip=False):
     checklists = card.checklists
     print_names = len(checklists) >= 2
 
@@ -94,15 +95,20 @@ def print_checklists_from_card(card):
             addl_indent = ''
 
         items = chl.items
+        in_progress_regex = r'\((in progress|WIP)\)$'
         for item in items:
             if item.get('checked'):
                 checkmark = '- [x]'
-            elif "in progress" in item.get('name'):
+            elif re.search(in_progress_regex, item.get('name')):
                 checkmark = '- [-]'
             else:
                 checkmark = '- [ ]'
-            print('{}    {} {}'.format(
-                addl_indent, checkmark, item.get('name')))
+
+            item_name = item.get('name')
+            if remove_wip:
+                item_name = re.sub(in_progress_regex, "", item_name)
+
+            print('{}    {} {}'.format(addl_indent, checkmark, item_name))
 
 
 def print_attachments_from_card(card, skip_links=False):
