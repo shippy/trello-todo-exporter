@@ -158,11 +158,12 @@ def get_labels_from_card(card):
 
     labels_text = []
     # spaces around label intended as padding that e-mail client doesn't strip
-    label_template = ("<span style='color: white; background-color: {color};'>"
+    label_template = ("<span style='color: {text}; background-color: {color};'>"
                       "&nbsp;{lbl}&nbsp;</span> ")
     for label in labels:
+        text_color = "black" if label.color == "yellow" else "white"
         labels_text.append(label_template.format(
-            color=label.color, lbl=label.name))
+            text=text_color, color=label.color, lbl=label.name))
     return "".join(labels_text)
 
 
