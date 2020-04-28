@@ -181,8 +181,8 @@ def main_print(api, board, list_id_lookup):
 
     print_cards_from_list(done_today, 'x')
     print_cards_from_list(in_progress, '-')
-    print_cards_from_list(waiting_on, '-')
     print_cards_from_list(tomorrow, ' ')
+    print_cards_from_list(waiting_on, '-')
 
 
 if __name__ == '__main__':
