@@ -20,8 +20,8 @@ def get_trello_list_from_name(api, board, name, list_id_lookup=None):
     Load lists based on IDs if available, name-matching thru all board lists if
     not
 
-    name: List name, should correspond to keys in list_id_lookup as well as actual
-              Trello list name
+    name: List name, should correspond to keys in list_id_lookup as well as
+            actual Trello list name
     board: trello.Board object
     list_id_lookup: "List name" => trello.List object ID
     """
@@ -70,7 +70,8 @@ def print_cards_from_list(lst, checkmark=' ', link_after_name=True,
         else:
             desc = card.desc
         labels = get_labels_from_card(card)
-        name_with_url = get_formatted_link(card, link_after_name, check_alternatives=True)
+        name_with_url = get_formatted_link(card, link_after_name,
+                                           check_alternatives=True)
         print(card_format.format(
             check=checkmark,
             labels=labels,
@@ -139,7 +140,8 @@ def get_formatted_link(card, link_after_name=True, check_alternatives=True):
         if alt is None:
             template = "**{name}** ([card]({url}))"
         else:
-            template = "**{name}** ([card]({url}), [card on original board]({alt}))"
+            template = ("**{name}** ([card]({url}), "
+                        "[card on original board]({alt}))")
     else:
         template = "**[{name}]({url})**"
         if alt is not None:
@@ -158,7 +160,8 @@ def get_labels_from_card(card):
 
     labels_text = []
     # spaces around label intended as padding that e-mail client doesn't strip
-    label_template = ("<span style='color: {text}; background-color: {color};'>"
+    label_template = ("<span style='color: {text}; "
+                      "background-color: {color};'>"
                       "&nbsp;{lbl}&nbsp;</span> ")
     for label in labels:
         text_color = "black" if label.color == "yellow" else "white"
