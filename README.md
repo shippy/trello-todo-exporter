@@ -50,6 +50,12 @@ information about all your environments.
 
 Run `make --always-make` or `make -B` (they're the same thing).
 
+### I need a report from yesterday
+
+Assuming you have a report generated from yesterday, you can override the
+`title` variable in your `make` invocation - for example,
+`make sendmail title=20201003`.
+
 ## To-do:
 
 - [ ] Make the conda environment's location detection automatic
