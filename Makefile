@@ -16,7 +16,7 @@ $(md_file):
 	$(TRELLO_CONDA_ENV)/bin/python trello_retriever.py > $(md_file)
 
 sendmail: $(html_file)
-	cat $(html_file) | sendmail -t
+	cat $(html_file) | sendmail -f $(TRELLO_MAIL_FROM) -t
 
 show: $(md_file)
 	cat $^ | (((command -v pygmentize >/dev/null 2>&1) && pygmentize -l html | pygmentize -l md -f terminal) || cat)
